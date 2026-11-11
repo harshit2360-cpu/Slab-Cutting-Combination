@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slab Combination &amp; Costing Calculator — Darla Exports</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#F6F4F0;
+  --surface:#FFFFFF;
+  --ink:#211F1C;
+  --ink-muted:#6E6A62;
+  --line:#E2DED5;
+  --slate:#23262B;
+  --rust:#B5512C;
+  --positive:#2F7D52;
+  --negative:#C0392B;
+  --radius:10px;
+}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;}
+h1,h2{font-family:'Space Grotesk',sans-serif;}
+
+.topbar{
+  position:relative;
+  background:var(--slate);
+  color:#F4F1EA;
+  overflow:hidden;
+  padding:30px 24px 24px;
+}
+.topbar::before{
+  content:"";
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(circle at 3% 30%, rgba(255,255,255,.12) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 9% 70%, rgba(255,255,255,.07) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 15% 15%, rgba(0,0,0,.35) 0 1.6px, transparent 1.8px),
+    radial-gradient(circle at 21% 55%, rgba(181,81,44,.30) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 27% 85%, rgba(255,255,255,.09) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 33% 25%, rgba(0,0,0,.30) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 39% 65%, rgba(255,255,255,.10) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 45% 10%, rgba(181,81,44,.22) 0 1.6px, transparent 1.8px),
+    radial-gradient(circle at 51% 45%, rgba(255,255,255,.08) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 57% 80%, rgba(0,0,0,.32) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 63% 20%, rgba(255,255,255,.11) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 69% 60%, rgba(181,81,44,.26) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 75% 35%, rgba(0,0,0,.28) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 81% 75%, rgba(255,255,255,.09) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 87% 15%, rgba(255,255,255,.07) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 93% 55%, rgba(0,0,0,.30) 0 1.4px, transparent 1.6px),
+    radial-gradient(circle at 97% 90%, rgba(181,81,44,.24) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 6% 95%, rgba(255,255,255,.08) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 18% 40%, rgba(255,255,255,.06) 0 1px, transparent 1.1px),
+    radial-gradient(circle at 36% 90%, rgba(0,0,0,.25) 0 1.1px, transparent 1.3px),
+    radial-gradient(circle at 48% 70%, rgba(255,255,255,.07) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 60% 5%, rgba(0,0,0,.28) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 72% 90%, rgba(255,255,255,.08) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 84% 45%, rgba(181,81,44,.20) 0 1.2px, transparent 1.4px),
+    radial-gradient(circle at 95% 25%, rgba(255,255,255,.09) 0 1.2px, transparent 1.4px);
+}
+.topbar-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+.topbar h1{font-size:1.55rem;margin:0 0 8px;letter-spacing:.01em;}
+.topbar .subtitle{margin:0;color:#C9C4B8;font-size:.88rem;max-width:660px;line-height:1.5;}
+
+main{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px 26px;margin-bottom:22px;}
+
+h2{font-size:1rem;letter-spacing:.03em;text-transform:uppercase;font-weight:600;margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:10px;}
+
+.grid-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;}
+.grid-inputs label{display:flex;flex-direction:column;font-size:.78rem;color:var(--ink-muted);gap:6px;}
+.grid-inputs input{font-family:'IBM Plex Mono',monospace;font-size:.95rem;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#FBFAF8;color:var(--ink);}
+.grid-inputs select{font-family:'Inter',sans-serif;font-size:.9rem;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:#FBFAF8;color:var(--ink);}
+.grid-inputs input:focus,.grid-inputs select:focus{outline:2px solid var(--rust);outline-offset:1px;}
+
+.block-readout{margin-top:16px;font-size:.82rem;color:var(--ink-muted);font-family:'IBM Plex Mono',monospace;}
+
+.hint{font-size:.85rem;color:var(--ink-muted);margin:-4px 0 16px;line-height:1.5;}
+.formula-note{font-size:.78rem;color:var(--ink-muted);margin-top:4px;font-family:'IBM Plex Mono',monospace;}
+
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:.88rem;}
+th{text-align:left;font-weight:500;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-muted);padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;white-space:nowrap;}
+td input,td select{width:100%;min-width:70px;box-sizing:border-box;font-family:'IBM Plex Mono',monospace;font-size:.85rem;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:#FBFAF8;color:var(--ink);}
+td select{font-family:'Inter',sans-serif;min-width:130px;}
+td input:disabled{background:#F0EEEA;color:#B5B0A6;cursor:not-allowed;}
+tfoot td{font-weight:600;border-top:2px solid var(--line);border-bottom:none;}
+.invalid-row td{color:#B5B0A6;}
+.empty-msg{color:var(--ink-muted);font-style:italic;padding:14px 10px;white-space:normal;}
+
+.remove-btn{background:none;border:none;color:var(--ink-muted);font-size:1.15rem;cursor:pointer;line-height:1;padding:3px 8px;border-radius:4px;}
+.remove-btn:hover{background:#F0EEEA;color:var(--negative);}
+
+.btn-secondary{background:#FBFAF8;border:1px solid var(--line);color:var(--ink);font-family:'Inter',sans-serif;font-size:.85rem;padding:9px 16px;border-radius:7px;cursor:pointer;}
+.btn-secondary:hover{border-color:var(--rust);color:var(--rust);}
+.btn-primary{background:var(--slate);border:1px solid var(--slate);color:#fff;font-family:'Inter',sans-serif;font-size:.9rem;font-weight:500;padding:11px 22px;border-radius:7px;cursor:pointer;}
+.btn-primary:hover{background:var(--rust);border-color:var(--rust);}
+
+.banner{margin-top:4px;padding:10px 14px;border-radius:7px;font-size:.85rem;}
+.banner div{margin:2px 0;}
+.banner-error{background:#FBEAE7;color:var(--negative);border:1px solid #F2C4BC;}
+.banner-note{background:#EEF3F6;color:#3C5A6E;border:1px solid #CFE0E8;}
+
+.summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.stat{background:#FBFAF8;border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:6px;}
+.stat-label{font-size:.72rem;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-muted);}
+.stat-value{font-family:'IBM Plex Mono',monospace;font-size:1.2rem;font-variant-numeric:tabular-nums;}
+.stat-value small{font-size:.7rem;color:var(--ink-muted);font-family:'Inter',sans-serif;}
+.stat.highlight{border-color:var(--ink);border-width:1.5px;}
+.stat.highlight.positive .stat-value{color:var(--positive);}
+.stat.highlight.negative .stat-value{color:var(--negative);}
+
+.actions{display:flex;gap:12px;justify-content:flex-end;margin-top:8px;}
+
+footer{text-align:center;font-size:.75rem;color:var(--ink-muted);padding:6px 20px 30px;}
+
+@media (max-width:680px){
+  .summary-grid{grid-template-columns:repeat(2,1fr);}
+  .actions{flex-direction:column;}
+  main{padding:20px 14px 50px;}
+}
+
+@media print{
+  .btn-primary,.btn-secondary,#addRowBtn,.actions,.hint,.formula-note,.remove-btn{display:none!important;}
+  body{background:#fff;}
+  .topbar{background:#fff;color:#000;padding:10px 0;}
+  .topbar::before{display:none;}
+  .topbar .subtitle{color:#444;}
+  .card{border:1px solid #ccc;box-shadow:none;break-inside:avoid;}
+  td input,td input:disabled{background:transparent;border:none;padding:2px;color:#000;}
+  td select{border:none;background:transparent;-webkit-appearance:none;appearance:none;color:#000;}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1>Slab Combination &amp; Costing Calculator</h1>
+    <p class="subtitle">Darla Exports — enter the block size, thickness combination and rates. Slab counts, purchase cost, sales value and profit are calculated automatically.</p>
+  </div>
+</header>
+
+<main>
+
+  <section class="card">
+    <h2>Block &amp; Order Details</h2>
+    <div class="grid-inputs">
+      <label>Length (cm)<input type="number" id="blockL" value="315" min="0" step="0.1"></label>
+      <label>Height (cm)<input type="number" id="blockH" value="180" min="0" step="0.1"></label>
+      <label>Width (cm)<input type="number" id="blockW" value="170" min="0" step="0.1"></label>
+      <label>FX Rate (₹ per unit)<input type="number" id="fxRate" value="94" min="0" step="0.01"></label>
+      <label>Block Cost / FOB (₹)<input type="number" id="fobCost" value="78000" min="0" step="1"></label>
+      <label>Saw loss per slab (cm)<input type="number" id="kerf" value="1" min="0" step="0.1"></label>
+      <label>Currency symbol<input type="text" id="currency" value="$" maxlength="3"></label>
+      <label>Granite shade
+        <select id="densityPreset">
+          <option value="2700" selected>Light (~2700 kg/m³)</option>
+          <option value="2900">Medium / Dark Grey (~2900 kg/m³)</option>
+          <option value="3100">Black (~3100 kg/m³)</option>
+          <option value="custom">Custom...</option>
+        </select>
+      </label>
+      <label id="customDensityLabel" style="display:none;">Custom density (kg/m³)<input type="number" id="density" value="2900" min="0" step="10"></label>
+      <label>Container target (tons)<input type="number" id="containerTarget" value="27.5" min="0" step="0.1"></label>
+    </div>
+    <div class="block-readout" id="blockReadout"></div>
+    <div class="formula-note">Pick the shade closest to what you're shipping, or choose Custom if your supplier gives you an exact figure.</div>
+  </section>
+
+  <section class="card">
+    <h2>Thickness Combination</h2>
+    <p class="hint">Set how each thickness is used: a fixed slab count, or "Remaining width" for whatever is left of the block width. Only one thickness can be set to remaining width.</p>
+    <div class="table-wrap">
+      <table id="inputTable">
+        <thead>
+          <tr>
+            <th>Thickness (cm)</th>
+            <th>Use</th>
+            <th>Slab Count</th>
+            <th>Factory Rate (₹/sft)</th>
+            <th id="salesRateInputTh">Sales Rate ($/m²)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="inputRows"></tbody>
+      </table>
+    </div>
+    <button type="button" id="addRowBtn" class="btn-secondary">+ Add thickness</button>
+    <div class="formula-note">width used = slab count × (thickness + saw loss)  ·  slabs = floor(width used ÷ (thickness + saw loss))</div>
+    <div id="warningBanner" class="banner" style="display:none;"></div>
+  </section>
+
+  <section class="card">
+    <h2>Calculated Output</h2>
+    <div class="table-wrap">
+      <table id="outputTable">
+        <thead>
+          <tr>
+            <th>Thickness</th>
+            <th>Width Used</th>
+            <th>Slabs</th>
+            <th>Total m²</th>
+            <th>Total sft</th>
+            <th>Weight (kg)</th>
+            <th>Purchase Cost (₹)</th>
+            <th id="salesValueOutputTh">Sales Value ($)</th>
+          </tr>
+        </thead>
+        <tbody id="outputRows"></tbody>
+        <tfoot><tr id="outputTotalsRow"></tr></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Profit Summary</h2>
+    <div class="summary-grid" id="summaryGrid"></div>
+  </section>
+
+  <div class="actions">
+    <button type="button" id="printBtn" class="btn-primary">Print / Save as PDF</button>
+    <button type="button" id="resetBtn" class="btn-secondary">Reset to example</button>
+  </div>
+
+</main>
+
+<footer>Darla Exports — internal costing tool</footer>
+
+<script>
+let nextId = 0;
+let rows = [];
+
+function defaultRows(){
+  nextId = 0;
+  return [2,3,4,5,6,7,8,9,10,11,12].map(t=>({id: nextId++, thickness:t, mode:'none', count:0, factoryRate:0, salesRate:0}));
+}
+
+function applyExample(){
+  rows = defaultRows();
+  const r3 = rows.find(r=>r.thickness===3); r3.mode='rest'; r3.factoryRate=421.95; r3.salesRate=62;
+  const r5 = rows.find(r=>r.thickness===5); r5.mode='count'; r5.count=2; r5.factoryRate=659.6; r5.salesRate=96;
+  const r7 = rows.find(r=>r.thickness===7); r7.mode='count'; r7.count=1; r7.factoryRate=873; r7.salesRate=127;
+}
+
+const blockLEl = document.getElementById('blockL');
+const blockHEl = document.getElementById('blockH');
+const blockWEl = document.getElementById('blockW');
+const fxRateEl = document.getElementById('fxRate');
+const fobCostEl = document.getElementById('fobCost');
+const kerfEl = document.getElementById('kerf');
+const currencyEl = document.getElementById('currency');
+const densityEl = document.getElementById('density');
+const densityPresetEl = document.getElementById('densityPreset');
+const customDensityLabelEl = document.getElementById('customDensityLabel');
+const containerTargetEl = document.getElementById('containerTarget');
+const blockReadoutEl = document.getElementById('blockReadout');
+const inputRowsEl = document.getElementById('inputRows');
+const outputRowsEl = document.getElementById('outputRows');
+const outputTotalsRowEl = document.getElementById('outputTotalsRow');
+const summaryGridEl = document.getElementById('summaryGrid');
+const warningBannerEl = document.getElementById('warningBanner');
+const addRowBtn = document.getElementById('addRowBtn');
+const resetBtn = document.getElementById('resetBtn');
+const printBtn = document.getElementById('printBtn');
+const salesRateInputTh = document.getElementById('salesRateInputTh');
+const salesValueOutputTh = document.getElementById('salesValueOutputTh');
+
+function num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+
+function formatINR(n){ return n.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function formatUSD(n){ return n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}); }
+function formatThickness(t){ return Number(t).toString(); }
+
+function renderInputRows(){
+  inputRowsEl.innerHTML = rows.map(row => `
+    <tr data-id="${row.id}">
+      <td><input type="number" class="thickness-input" value="${row.thickness}" step="0.1" min="0"></td>
+      <td>
+        <select class="mode-select">
+          <option value="none" ${row.mode==='none'?'selected':''}>Not used</option>
+          <option value="count" ${row.mode==='count'?'selected':''}>Slab count</option>
+          <option value="rest" ${row.mode==='rest'?'selected':''}>Remaining width</option>
+        </select>
+      </td>
+      <td><input type="number" class="count-input" value="${row.count}" step="1" min="0" ${row.mode!=='count'?'disabled':''}></td>
+      <td><input type="number" class="factory-input" value="${row.factoryRate}" step="0.01" min="0" ${row.mode==='none'?'disabled':''}></td>
+      <td><input type="number" class="sales-input" value="${row.salesRate}" step="0.01" min="0" ${row.mode==='none'?'disabled':''}></td>
+      <td><button type="button" class="remove-btn" title="Remove row">&times;</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderWarnings(list, type){
+  if(list.length === 0){
+    warningBannerEl.style.display = 'none';
+    warningBannerEl.innerHTML = '';
+    return;
+  }
+  warningBannerEl.style.display = 'block';
+  warningBannerEl.className = 'banner ' + (type === 'error' ? 'banner-error' : 'banner-note');
+  warningBannerEl.innerHTML = list.map(w => `<div>${w}</div>`).join('');
+}
+
+function recalcAll(){
+  const L = num(blockLEl.value), H = num(blockHEl.value), W = num(blockWEl.value);
+  const fx = num(fxRateEl.value), fob = num(fobCostEl.value), kerf = num(kerfEl.value);
+  const density = densityPresetEl.value === 'custom' ? num(densityEl.value) : num(densityPresetEl.value);
+  const containerTarget = num(containerTargetEl.value);
+  const cur = (currencyEl.value || '$').trim() || '$';
+
+  salesRateInputTh.textContent = `Sales Rate (${cur}/m²)`;
+  salesValueOutputTh.textContent = `Sales Value (${cur})`;
+
+  const sqmPerSlab = (L * H) / 10000;
+  const m2ToSft = 10.764;
+  const blockCbm = (L * H * W) / 1000000;
+
+  blockReadoutEl.textContent = `Block volume: ${blockCbm.toFixed(3)} m³  ·  Slab face area: ${sqmPerSlab.toFixed(3)} m² per slab  ·  1 m² = ${m2ToSft} sft`;
+
+  let countWidthSum = 0;
+  rows.forEach(r => { if(r.mode === 'count') countWidthSum += r.count * (r.thickness + kerf); });
+
+  const restWidthRaw = W - countWidthSum;
+  const restWidth = Math.max(restWidthRaw, 0);
+
+  // pre-compute weight already committed by fixed-count rows
+  let countWeightKg = 0;
+  rows.forEach(r => {
+    if(r.mode === 'count'){
+      const denom = r.thickness + kerf;
+      const slabs = denom > 0 ? Math.floor(r.count * denom / denom + 1e-9) : 0;
+      countWeightKg += slabs * sqmPerSlab * (r.thickness / 100) * density;
+    }
+  });
+  const weightBudgetKg = containerTarget > 0 ? Math.max((containerTarget * 1000) - countWeightKg, 0) : Infinity;
+
+  let restAssigned = false;
+  let extraRestCount = 0;
+  let restCappedByWeight = false;
+  const results = [];
+
+  rows.forEach(r => {
+    if(r.mode === 'count'){
+      const denom = r.thickness + kerf;
+      const widthUsed = r.count * denom;
+      const slabs = denom > 0 ? Math.floor(widthUsed / denom + 1e-9) : 0;
+      pushResult(r, widthUsed, slabs, false);
+    } else if(r.mode === 'rest'){
+      if(!restAssigned){
+        restAssigned = true;
+        const denom = r.thickness + kerf;
+        const slabsByWidth = denom > 0 ? Math.floor(restWidth / denom + 1e-9) : 0;
+        const weightPerSlab = sqmPerSlab * (r.thickness / 100) * density;
+        const slabsByWeight = (weightPerSlab > 0 && isFinite(weightBudgetKg))
+          ? Math.floor(weightBudgetKg / weightPerSlab + 1e-9)
+          : slabsByWidth;
+        const slabs = Math.min(slabsByWidth, slabsByWeight);
+        if(slabsByWeight < slabsByWidth){ restCappedByWeight = true; }
+        const widthUsed = slabs * denom;
+        pushResult(r, widthUsed, slabs, false);
+      } else {
+        extraRestCount++;
+        pushResult(r, 0, 0, true);
+      }
+    }
+  });
+
+  function pushResult(r, widthUsed, slabs, invalid){
+    const totalM2 = slabs * sqmPerSlab;
+    const totalSft = totalM2 * m2ToSft;
+    const weightKg = totalM2 * (r.thickness / 100) * density;
+    const purchase = (r.factoryRate || 0) * totalSft;
+    const sales = (r.salesRate || 0) * totalM2;
+    results.push({ thickness: r.thickness, widthUsed, slabs, totalM2, totalSft, weightKg, purchase, sales, invalid });
+  }
+
+  const warnings = [];
+  if(restWidthRaw < 0){
+    warnings.push('Combination uses ' + Math.abs(restWidthRaw).toFixed(2) + ' cm more than the block width (' + W + ' cm). Reduce slab counts.');
+  } else if(!restAssigned && countWidthSum > 0 && countWidthSum < W){
+    warnings.push((W - countWidthSum).toFixed(2) + ' cm of block width is not assigned to any thickness.');
+  }
+  if(restCappedByWeight){
+    warnings.push('Remaining-width slabs capped to stay within the ' + containerTarget + 't container target. Some block width will be left unused.');
+  }
+  if(extraRestCount > 0){
+    warnings.push('Only one thickness can use "Remaining width" — ' + extraRestCount + ' extra row(s) ignored.');
+  }
+  renderWarnings(warnings, restWidthRaw < 0 ? 'error' : (restCappedByWeight ? 'note' : 'note'));
+
+  results.sort((a, b) => a.thickness - b.thickness);
+
+  outputRowsEl.innerHTML = results.length ? results.map(res => `
+    <tr class="${res.invalid ? 'invalid-row' : ''}">
+      <td>${formatThickness(res.thickness)} cm</td>
+      <td>${res.invalid ? '—' : res.widthUsed.toFixed(2) + ' cm'}</td>
+      <td>${res.invalid ? '—' : res.slabs}</td>
+      <td>${res.invalid ? '—' : res.totalM2.toFixed(2)}</td>
+      <td>${res.invalid ? '—' : res.totalSft.toFixed(2)}</td>
+      <td>${res.invalid ? '—' : formatINR(res.weightKg)}</td>
+      <td>${res.invalid ? '—' : '₹' + formatINR(res.purchase)}</td>
+      <td>${res.invalid ? '—' : cur + formatUSD(res.sales)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="8" class="empty-msg">Set a thickness to "Slab count" or "Remaining width" to see results here.</td></tr>`;
+
+  const totals = results.reduce((acc, res) => {
+    if(!res.invalid){
+      acc.slabs += res.slabs;
+      acc.m2 += res.totalM2;
+      acc.sft += res.totalSft;
+      acc.weight += res.weightKg;
+      acc.purchase += res.purchase;
+      acc.sales += res.sales;
+    }
+    return acc;
+  }, { slabs: 0, m2: 0, sft: 0, weight: 0, purchase: 0, sales: 0 });
+
+  outputTotalsRowEl.innerHTML = `
+    <td>Total</td>
+    <td>—</td>
+    <td>${totals.slabs}</td>
+    <td>${totals.m2.toFixed(2)}</td>
+    <td>${totals.sft.toFixed(2)}</td>
+    <td>${formatINR(totals.weight)}</td>
+    <td>₹${formatINR(totals.purchase)}</td>
+    <td>${cur}${formatUSD(totals.sales)}</td>
+  `;
+
+  const totalCost = totals.purchase + fob;
+  const salesInINR = totals.sales * fx;
+  const profit = salesInINR - totalCost;
+  const margin = salesInINR !== 0 ? (profit / salesInINR * 100) : 0;
+  const profitClass = profit >= 0 ? 'positive' : 'negative';
+
+  const totalWeightTons = totals.weight / 1000;
+  const containerPct = containerTarget > 0 ? (totalWeightTons / containerTarget * 100) : 0;
+  const weightClass = containerTarget > 0 ? (containerPct > 100 ? 'negative' : 'positive') : '';
+  const containerNote = containerTarget > 0 ? `${containerPct.toFixed(1)}% of ${containerTarget}t target` : '';
+
+  summaryGridEl.innerHTML = `
+    <div class="stat"><span class="stat-label">Total Slabs</span><span class="stat-value">${totals.slabs}</span></div>
+    <div class="stat"><span class="stat-label">Total Area</span><span class="stat-value">${totals.m2.toFixed(2)} m² <small>(${totals.sft.toFixed(2)} sft)</small></span></div>
+    <div class="stat highlight ${weightClass}"><span class="stat-label">Approx Cargo Weight</span><span class="stat-value">${formatINR(totals.weight)} kg <small>(${totalWeightTons.toFixed(2)} t)</small></span><small>${containerNote}</small></div>
+    <div class="stat"><span class="stat-label">Purchase Cost</span><span class="stat-value">₹${formatINR(totals.purchase)}</span></div>
+    <div class="stat"><span class="stat-label">Block Cost (FOB)</span><span class="stat-value">₹${formatINR(fob)}</span></div>
+    <div class="stat"><span class="stat-label">Total Cost</span><span class="stat-value">₹${formatINR(totalCost)}</span></div>
+    <div class="stat"><span class="stat-label">Sales Value</span><span class="stat-value">${cur}${formatUSD(totals.sales)}</span></div>
+    <div class="stat"><span class="stat-label">Sales in ₹</span><span class="stat-value">₹${formatINR(salesInINR)}</span></div>
+    <div class="stat highlight ${profitClass}"><span class="stat-label">Profit</span><span class="stat-value">₹${formatINR(profit)}</span></div>
+    <div class="stat highlight ${profitClass}"><span class="stat-label">Margin</span><span class="stat-value">${margin.toFixed(1)}%</span></div>
+  `;
+}
+
+inputRowsEl.addEventListener('input', e => {
+  const tr = e.target.closest('tr'); if(!tr) return;
+  const row = rows.find(r => r.id === Number(tr.dataset.id)); if(!row) return;
+  if(e.target.classList.contains('thickness-input')) row.thickness = num(e.target.value);
+  else if(e.target.classList.contains('count-input')) row.count = num(e.target.value);
+  else if(e.target.classList.contains('factory-input')) row.factoryRate = num(e.target.value);
+  else if(e.target.classList.contains('sales-input')) row.salesRate = num(e.target.value);
+  recalcAll();
+});
+
+inputRowsEl.addEventListener('change', e => {
+  if(e.target.classList.contains('mode-select')){
+    const tr = e.target.closest('tr');
+    const row = rows.find(r => r.id === Number(tr.dataset.id)); if(!row) return;
+    row.mode = e.target.value;
+    renderInputRows();
+    recalcAll();
+  }
+});
+
+inputRowsEl.addEventListener('click', e => {
+  if(e.target.classList.contains('remove-btn')){
+    const tr = e.target.closest('tr');
+    rows = rows.filter(r => r.id !== Number(tr.dataset.id));
+    renderInputRows();
+    recalcAll();
+  }
+});
+
+addRowBtn.addEventListener('click', () => {
+  rows.push({ id: nextId++, thickness: 0, mode: 'none', count: 0, factoryRate: 0, salesRate: 0 });
+  renderInputRows();
+  recalcAll();
+});
+
+densityPresetEl.addEventListener('change', () => {
+  customDensityLabelEl.style.display = densityPresetEl.value === 'custom' ? 'flex' : 'none';
+  recalcAll();
+});
+
+[blockLEl, blockHEl, blockWEl, fxRateEl, fobCostEl, kerfEl, currencyEl, densityEl, containerTargetEl].forEach(el => {
+  el.addEventListener('input', recalcAll);
+});
+
+resetBtn.addEventListener('click', () => {
+  blockLEl.value = 315; blockHEl.value = 180; blockWEl.value = 170;
+  fxRateEl.value = 94; fobCostEl.value = 78000; kerfEl.value = 1; currencyEl.value = '$';
+  densityPresetEl.value = '2700'; densityEl.value = 2900; customDensityLabelEl.style.display = 'none';
+  containerTargetEl.value = 27.5;
+  applyExample();
+  renderInputRows();
+  recalcAll();
+});
+
+printBtn.addEventListener('click', () => window.print());
+
+applyExample();
+renderInputRows();
+recalcAll();
+</script>
+
+</body>
+</html>
